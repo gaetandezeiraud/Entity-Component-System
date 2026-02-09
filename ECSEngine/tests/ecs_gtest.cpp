@@ -27,9 +27,11 @@ SOFTWARE.
 #include <numeric>
 #include <set>
 #include <memory>
+#include <algorithm>
+#include <random>
 
 #include "../src/ECS/ECS.h"
-#include "../src/PrivimiteTypes.h"
+#include "../src/PrimitiveTypes.h"
 
 // Dummy component for testing
 struct TestComponent
@@ -56,15 +58,15 @@ TEST(ECSTest, EntityComponentLifecycle) {
 }
 
 TEST(ECSTest, EntityMemberAddComponent) {
-    using namespace ECS;
-    Registry registry;
+	using namespace ECS;
+	Registry registry;
 
-    auto entity = registry.CreateEntity();
-    // Use Entity's member AddComponent wrapper
-    entity.AddComponent<TestComponent>(55);
+	auto entity = registry.CreateEntity();
+	// Use Entity's member AddComponent wrapper
+	entity.AddComponent<TestComponent>(55);
 
-    EXPECT_TRUE(entity.HasComponent<TestComponent>());
-    EXPECT_EQ(entity.GetComponent<TestComponent>().value, 55);
+	EXPECT_TRUE(entity.HasComponent<TestComponent>());
+	EXPECT_EQ(entity.GetComponent<TestComponent>().value, 55);
 }
 
 TEST(ECSTest, EntityTagAndGroup) {
@@ -141,6 +143,38 @@ TEST(ECSTest, ComponentAccessPerformance) {
 
 	// Print timing for informational purposes
 	std::cout << "[          ] Component access time: " << ms << " ms\n";
+}
+
+TEST(ECSTest, ComponentAccessPerformance_Random) {
+	using namespace ECS;
+	Registry registry;
+	constexpr size_t N = 100000;
+	std::vector<Entity> entities;
+	entities.reserve(N);
+
+	for (size_t i = 0; i < N; ++i) {
+		auto e = registry.CreateEntity();
+		registry.AddComponent<TestComponent>(e, static_cast<int>(i));
+		entities.push_back(e);
+	}
+
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(entities.begin(), entities.end(), g);
+
+	auto start = std::chrono::high_resolution_clock::now();
+
+	long long sum = 0;
+	for (size_t i = 0; i < N; ++i) {
+		sum += registry.GetComponent<TestComponent>(entities[i]).value;
+	}
+
+	auto end = std::chrono::high_resolution_clock::now();
+	auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+	EXPECT_GT(sum, 0);
+
+	std::cout << "[          ] Random access time (100k): " << ms << " ms\n";
 }
 
 // Test: Entity Reuse and ID Recycling

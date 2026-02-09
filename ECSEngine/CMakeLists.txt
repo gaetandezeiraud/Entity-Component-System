@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 # Set the source directory
 set(PROJECT_SOURCES
-    src/PrivimiteTypes.h
+    src/PrimitiveTypes.h
     src/ECS/Common.h
     src/ECS/ECS.h
     src/ECS/Component.h

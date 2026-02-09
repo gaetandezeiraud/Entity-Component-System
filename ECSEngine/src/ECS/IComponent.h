@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "../PrivimiteTypes.h"
+#include "../PrimitiveTypes.h"
 
 namespace ECS
 {

@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "PrivimiteTypes.h"
+#include "PrimitiveTypes.h"
 
 #include <bitset>
 #include <unordered_map>
